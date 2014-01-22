@@ -1,0 +1,44 @@
+body, html {
+  height: 100%;
+  margin: 0;
+  padding: 0
+}
+* {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+}
+a {
+  padding: 8px;
+  display: block;
+}
+.list {
+  margin: 1em auto;
+  height: 380px;
+  width: 320px;
+  overflow: auto;
+  position: relative;
+}
+.item {
+  line-height: 42px;
+  font-family: monospace;
+  padding: 4px 1em 4px 64px;
+  position: absolute;
+  text-shadow: 0 1px 10px #fcf;
+  height: 48px;
+  width: 100%;
+  background: linear-gradient(to bottom, #fff, #f8f8f8);
+}
+.naive .item {
+  position: relative;
+}
+.item:after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  width: 32px;
+  height: 32px;
+  border-radius: 2px;
+  box-shadow: 0 0 40px rgba(0,0,0,.5),
+              0 0 5px 4px #fee inset;
+}

@@ -1,0 +1,10 @@
+{
+    "name": "ScrollList Test",
+    "description": "",
+    "developer": {
+        "name": "Potch",
+        "url": "http://potch.me/"
+    },
+    "launch_path": "/index.html",
+    "default_locale": "en"
+}
