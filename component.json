@@ -1,0 +1,19 @@
+{
+  "name": "list-view",
+  "description": "Scrolling list with support for a large number of DOM nodes",
+  "version": "0.0.1",
+  "keywords": [
+    "web-components",
+    "button",
+    "icon",
+    "label",
+    "x-tag"
+  ],
+  "main": [
+    "src/deck.js",
+    "src/deck.css"
+  ],
+  "dependencies": {
+    "x-tag-core": "*"
+  }
+}

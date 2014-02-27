@@ -1,0 +1,18 @@
+{
+  "name": "list-view",
+  "description": "",
+  "version": "0.0.1",
+  "keywords": [
+    "web-components",
+    "x-tag"
+  ],
+  "main": [
+    "src/listview.js",
+    "src/listview.css",
+    "src/listview.styl"
+  ],
+  "dependencies": {
+    "x-tag-core": "*",
+    "brick-common": "*"
+  }
+}
