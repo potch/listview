@@ -139,7 +139,6 @@
         var listview = e.currentTarget;
         var el = this;
         var item = listview.xtag.data[el.getAttribute('data-id')];
-        console.log(e, item);
       }
     },
     accessors: {
