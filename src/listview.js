@@ -61,8 +61,6 @@
   }
 
   function render(listview) {
-    stats.begin();
-
     var ns = listview.xtag;
     ns.skippedFrames = 0;
     var itemWindow = ns.numItemsVisible;
@@ -94,7 +92,6 @@
         i--;
       }
     }
-    stats.end();
   }
 
   function scroll(listview) {
