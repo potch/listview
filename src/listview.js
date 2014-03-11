@@ -16,6 +16,7 @@
     ns.deadPool = [];
     ns.visibleItems = [];
     ns.items = {};
+    ns.skippedFrames = 0;
     ns.list.style.height = listview.height * data.length + 'px';
   }
 
@@ -60,6 +61,43 @@
   }
 
   function render(listview) {
+    stats.begin();
+
+    var ns = listview.xtag;
+    ns.skippedFrames = 0;
+    var itemWindow = ns.numItemsVisible;
+    if (!itemWindow) {
+      computeMetrics(listview);
+      itemWindow = ns.numItemsVisible;
+    }
+    var list = ns.list;
+    var items = ns.items;
+    var visibleItems = ns.visibleItems;
+    var deadPool = ns.deadPool;
+    var height = listview.height;
+    var min = Math.max((listview.scrollTop / height|0) - itemWindow, 0);
+    var max = Math.min((listview.scrollTop / height|0) + itemWindow * 2, numItems);
+    for (var i = min; i < max; i++) {
+      if (!items[i]) {
+        var newEl = renderItem(listview, i);
+        items[i] = newEl;
+        visibleItems.push(i);
+        list.appendChild(newEl);
+      }
+    }
+    for (i = 0; i < visibleItems.length; i++) {
+      var idx = visibleItems[i];
+      if (idx < min || idx > max) {
+        deadPool.push(items[idx]);
+        visibleItems.splice(i,1);
+        delete items[idx];
+        i--;
+      }
+    }
+    stats.end();
+  }
+
+  function scroll(listview) {
     if (!listview.xtag.data) {
       return;
     }
@@ -83,38 +121,13 @@
     }, SCROLL_TIMEOUT);
 
     if (ns.nextFrame) {
-      xtag.cancelFrame(ns.nextFrame);
+      ns.skippedFrames = ns.skippedFrames + 1;
+      if (ns.skippedFrames < 4) {
+        // xtag.cancelFrame(ns.nextFrame);
+      }
     }
-    ns.nextFrame = xtag.requestFrame(function() {
-      var itemWindow = ns.numItemsVisible;
-      if (!itemWindow) {
-        computeMetrics(listview);
-        itemWindow = ns.numItemsVisible;
-      }
-      var list = ns.list;
-      var items = ns.items;
-      var visibleItems = ns.visibleItems;
-      var deadPool = ns.deadPool;
-      var height = listview.height;
-      var min = Math.max((listview.scrollTop / height|0) - itemWindow, 0);
-      var max = Math.min((listview.scrollTop / height|0) + itemWindow * 2, numItems);
-      for (var i = min; i < max; i++) {
-        if (!items[i]) {
-          var newEl = renderItem(listview, i);
-          items[i] = newEl;
-          visibleItems.push(i);
-          list.appendChild(newEl);
-        }
-      }
-      for (i = 0; i < visibleItems.length; i++) {
-        var idx = visibleItems[i];
-        if (idx < min || idx > max) {
-          deadPool.push(items[idx]);
-          visibleItems.splice(i,1);
-          delete items[idx];
-          i--;
-        }
-      }
+    ns.nextFrame = xtag.requestFrame(function () {
+      render(listview);
     });
   }
 
@@ -129,7 +142,7 @@
       inserted: function () {
         var lv = this;
         this.xtag.scrollHandler = lv.addEventListener('scroll', function() {
-          render(lv);
+          scroll(lv);
         });
         init(this);
       }

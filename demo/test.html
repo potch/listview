@@ -25,6 +25,8 @@
     <link rel="stylesheet" href="../src/listview.css">
     <script src="../bower_components/x-tag-core/dist/x-tag-core.js"></script>
     <script src="../src/listview.js"></script>
+    <script src="https://rawgithub.com/mrdoob/stats.js/master/src/Stats.js"></script>
+
   </head>
   <body>
     <section>
@@ -45,6 +47,12 @@
         }
       }
       addItems();
+
+      var stats = new Stats();
+      stats.domElement.style.position = 'fixed';
+      stats.domElement.style.right = '0px';
+      stats.domElement.style.bottom = '0px';
+      document.body.appendChild( stats.domElement );
 
       document.addEventListener('DOMComponentsLoaded', function(){
         listview.data = items;
