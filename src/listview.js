@@ -1,14 +1,13 @@
 (function () {
 
   var DEFAULT_HEIGHT = 48;
+  var SCROLL_TIMEOUT = 100;
 
   function computeMetrics(listview) {
-    console.log('el height', listview.offsetHeight);
     listview.xtag.numItemsVisible = (listview.offsetHeight / listview.height|0) + 1;
   }
 
   function init(listview) {
-    console.log(listview, 'init');
     var ns = listview.xtag;
     var data = ns.data;
     if (!data) {
@@ -21,19 +20,43 @@
   }
 
   function renderItem(listview, i) {
-    var div;
+    var div, img, span;
     var deadPool = listview.xtag.deadPool;
     var height = listview.height;
     if (deadPool.length) {
       div = deadPool.pop();
+      img = div.querySelector('img');
+      span = div.querySelector('span');
+      img.setAttribute('alt', ' ');
     } else {
       div = document.createElement('div');
+      div.classList.add('item');
+      img = document.createElement('img');
+      span = document.createElement('span');
+      div.appendChild(img);
+      div.appendChild(span);
     }
-    div.classList.add('item');
-    div.innerHTML = items[i];
+    img.src = '';
+    var item = items[i];
+    if (typeof item === 'object') {
+      div.setAttribute('data-id', item.id);
+      span.innerHTML = item.label || item.id || i;
+      if ('icon' in item) {
+        xtag.requestFrame(function () {
+          img.src = item.icon;
+        });
+      }
+    } else {
+      div.setAttribute('data-id', i);
+      span.innerHTML = item;
+    }
     div.style.transform = 'translateY(' + i * height + 'px)';
     div.style.webkitTransform = 'translateY(' + i * height + 'px)';
     return div;
+  }
+
+  function stopScrolling(listview) {
+    xtag.removeClass(listview, 'scrolling');
   }
 
   function render(listview) {
@@ -42,28 +65,39 @@
     }
 
     var ns = listview.xtag;
-    var list = ns.list;
-    var itemWindow = ns.numItemsVisible;
-    if (!itemWindow) {
-      computeMetrics(listview);
-      itemWindow = ns.numItemsVisible;
-    }
-
-    var items = ns.items;
-    var visibleItems = ns.visibleItems;
-    var deadPool = ns.deadPool;
-    var height = listview.height;
-    var min = Math.max((listview.scrollTop / height|0) - itemWindow, 0);
-    var max = Math.min((listview.scrollTop / height|0) + itemWindow * 2, numItems);
 
     if (!ns.data.length) {
       return;
     }
 
+    if (!ns.scrolling) {
+      xtag.addClass(listview, 'scrolling');
+    }
+    ns.scrolling = true;
+    if (ns.scrollTimeout) {
+      clearTimeout(ns.scrollTimeout);
+    }
+    ns.scrollTimeout = setTimeout(function () {
+      ns.scrolling = false;
+      stopScrolling(listview);
+    }, SCROLL_TIMEOUT);
+
     if (ns.nextFrame) {
       xtag.cancelFrame(ns.nextFrame);
     }
     ns.nextFrame = xtag.requestFrame(function() {
+      var itemWindow = ns.numItemsVisible;
+      if (!itemWindow) {
+        computeMetrics(listview);
+        itemWindow = ns.numItemsVisible;
+      }
+      var list = ns.list;
+      var items = ns.items;
+      var visibleItems = ns.visibleItems;
+      var deadPool = ns.deadPool;
+      var height = listview.height;
+      var min = Math.max((listview.scrollTop / height|0) - itemWindow, 0);
+      var max = Math.min((listview.scrollTop / height|0) + itemWindow * 2, numItems);
       for (var i = min; i < max; i++) {
         if (!items[i]) {
           var newEl = renderItem(listview, i);
@@ -98,6 +132,14 @@
           render(lv);
         });
         init(this);
+      }
+    },
+    events: {
+      'tap:delegate(.item)': function (e) {
+        var listview = e.currentTarget;
+        var el = this;
+        var item = listview.xtag.data[el.getAttribute('data-id')];
+        console.log(e, item);
       }
     },
     accessors: {

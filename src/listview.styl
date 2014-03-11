@@ -24,15 +24,25 @@ list-view {
     position: absolute;
     height: 48px;
     width: 100%;
+    border-bottom: 1px solid #ccc;
+    cursor: pointer;
+    &:hover {
+      background: #eee;
+    }
   }
-  .item:after {
-    content: '';
+  .item img {
     position: absolute;
     top: 8px;
-    left: 8px;
+    left: 12px;
     width: 32px;
     height: 32px;
     border-radius: 2px;
     background: #ccc;
+  }
+
+  &.scrolling {
+    .item {
+      pointer-events: none;
+    }
   }
 }

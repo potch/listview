@@ -30,10 +30,14 @@
       var listview = document.querySelector('list-view');
 
       var items = [];
-      var numItems = 100;
+      var numItems = 10000;
       function addItems () {
         for (var i=0; i<numItems; i++) {
-          items.push(i);
+          items.push({
+            id: i,
+            label: 'Item ' + i,
+            icon: 'http://lorempixel.com/32/32/?' + i
+          });
         }
       }
       addItems();
