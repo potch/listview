@@ -3,19 +3,55 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
-    <title>ScrollList Test</title>
-    <link rel="stylesheet" href="style.css">
+    <title>list-view test</title>
     <style>
+      html, body {
+        margin: 0;
+        height: 100%;
+      }
+      section {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 480px;
+        width: 320px;
+        margin: auto;
+        border: 1px solid black;
+        overflow: auto;
+      }
     </style>
+    <link rel="stylesheet" href="src/listview.css">
+    <script src="bower_components/x-tag-core/dist/x-tag-core.js"></script>
+    <script src="src/listview-vanilla.js"></script>
+
   </head>
   <body>
-    <div class="list">
-      <div class="item-container">
-      </div>
-    </div>
-    <b id="d"></b>
-    <a href="naive.html">naive</a>
-    <script src="app.js"></script>
-    <script src="https://rawgithub.com/mrdoob/stats.js/master/src/Stats.js"></script>
+    <section>
+      <list-view></list-view>
+    </section>
+    <script>
+      var listview = document.querySelector('list-view');
+      (function() {
+
+        var items = [];
+        var numItems = 100000;
+        function addItems () {
+          for (var i=0; i<numItems; i++) {
+            items.push({
+              id: i,
+              label: 'Item ' + i
+              // icon: 'http://lorempixel.com/32/32/?' + i
+            });
+          }
+        }
+        addItems();
+
+        document.addEventListener('DOMComponentsLoaded', function(){
+          listview.data = items;
+        });
+      })();
+    </script>
   </body>
 </html>

@@ -37,13 +37,16 @@
       div.appendChild(img);
       div.appendChild(span);
     }
-    img.src = '';
     var item = items[i];
+    // img.src = null;
     if (typeof item === 'object') {
       div.setAttribute('data-id', item.id);
       span.innerHTML = item.label || item.id || i;
       if ('icon' in item) {
-        xtag.requestFrame(function () {
+        if (img._nextFrame) {
+          xtag.cancelFrame(img._nextFrame);
+        }
+        img._nextFrame = xtag.requestFrame(function setSrc() {
           img.src = item.icon;
         });
       }
@@ -73,14 +76,16 @@
     var visibleItems = ns.visibleItems;
     var deadPool = ns.deadPool;
     var height = listview.height;
-    var min = Math.max((listview.scrollTop / height|0) - itemWindow, 0);
-    var max = Math.min((listview.scrollTop / height|0) + itemWindow * 2, numItems);
+    var min = Math.max((listview.scrollTop / height|0) - itemWindow / 2|0, 0);
+    var max = Math.min((listview.scrollTop / height|0) + itemWindow, numItems);
     for (var i = min; i < max; i++) {
       if (!items[i]) {
         var newEl = renderItem(listview, i);
         items[i] = newEl;
         visibleItems.push(i);
-        list.appendChild(newEl);
+        if (!newEl.parentNode) {
+          list.appendChild(newEl);
+        }
       }
     }
     for (i = 0; i < visibleItems.length; i++) {
@@ -119,9 +124,7 @@
 
     if (ns.nextFrame) {
       ns.skippedFrames = ns.skippedFrames + 1;
-      if (ns.skippedFrames < 4) {
-        // xtag.cancelFrame(ns.nextFrame);
-      }
+      xtag.cancelFrame(ns.nextFrame);
     }
     ns.nextFrame = xtag.requestFrame(function () {
       render(listview);
