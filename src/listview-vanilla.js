@@ -3,6 +3,13 @@
   var DEFAULT_HEIGHT = 48;
   var SCROLL_TIMEOUT = 100;
 
+  window.requestAnimationFrame = window.requestAnimationFrame ||
+                                 window.mozRequestAnimationFrame ||
+                                 window.webkitRequestAnimationFrame ||
+                                 window.msRequestAnimationFrame ||
+                                 function (fn) { setTimeout(fn, 0); };
+
+
   function DataSource(data) {
     this.data = data;
     this.length = data.length;
